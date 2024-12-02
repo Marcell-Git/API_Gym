@@ -12,6 +12,7 @@ class Pengguna extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'fotoProfil',
         'namaPengguna',
         'nomorIdentitas',
         'jenisKelamin',
