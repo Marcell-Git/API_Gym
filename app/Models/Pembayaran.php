@@ -15,6 +15,7 @@ class Pembayaran extends Model
         'id_pemesanan',
         'jenisPembayaran',
         'statusPembayaran',
+        'totalPembayaran',
     ];
 
     public function pemesanan()
