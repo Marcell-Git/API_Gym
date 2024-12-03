@@ -14,6 +14,7 @@ class KelasOlahraga extends Model
     protected $fillable = [
         'namaKelas',
         'jadwalKelas',
+        'hargaKelas',
         'id_alatGym',
         'id_personalTrainer',
     ];
