@@ -22,3 +22,5 @@ Route::resource('pembayaran', PembayaranController::class);
 Route::resource('pengguna', PenggunaController::class);
 Route::resource('personal-trainer', PersonalTrainerController::class);
 Route::resource('riwayat-pemesanan', RiwayatPemesananController::class);
+
+Route::post('pengguna/login', [PenggunaController::class, 'login']);

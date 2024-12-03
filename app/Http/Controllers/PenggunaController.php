@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PenggunaController extends Controller
 {
@@ -31,20 +32,26 @@ class PenggunaController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            $pengguna = Pengguna::create($request->all());
+        try {
+            // Enkripsi kata sandi sebelum menyimpan
+            $data = $request->all();
+            $data['kataSandi'] = bcrypt($request->kataSandi);
+
+            // Simpan data pengguna
+            $pengguna = Pengguna::create($data);
+
             return response()->json([
                 'status' => 'success',
-                'data' => $pengguna
-            ], status: 201); 
-        }
-        catch (\Exception $e) {
+                'data' => $pengguna,
+            ], 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
+                'message' => $e->getMessage(),
+            ], 400);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -102,4 +109,29 @@ class PenggunaController extends Controller
             ], status: 400);
         }
     }
+    
+    public function login(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'namaPengguna' => 'required|string',
+            'kataSandi' => 'required|string',
+        ]);
+
+        // Kredensial login
+        $credentials = [
+            'namaPengguna' => $request->namaPengguna,
+            'password' => $request->kataSandi, // Laravel akan mencocokkan dengan kolom `kataSandi` karena sudah diatur di model
+        ];
+
+        // Autentikasi pengguna
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            return response()->json(['data' => $user], 200);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
 }
+
