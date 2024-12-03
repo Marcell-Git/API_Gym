@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pengguna extends Model
+class Pengguna extends Authenticatable
 {
     use HasFactory;
     protected $table = 'penggunas';
@@ -21,4 +22,9 @@ class Pengguna extends Model
         'kataSandi',
         'nomorTelepon',
     ];
+
+    public function getAuthPassword()
+    {
+        return $this->kataSandi;
+    }
 }
