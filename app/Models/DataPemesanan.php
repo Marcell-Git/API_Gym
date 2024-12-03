@@ -17,6 +17,7 @@ class DataPemesanan extends Model
         'namaTrainer',
         'namaAlat',
         'jadwalKelas',
+        'status',
         'id_pengguna',
         'id_kelasOlahraga',
         'id_personalTrainer',
