@@ -4,102 +4,84 @@ namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
+
 
 class PenggunaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        try {
-            $pengguna = Pengguna::all();
-            return response()->json([
-                'status' => 'success',
-                'data' => $pengguna
-            ], status: 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
-        }
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        try{
-            $pengguna = Pengguna::create($request->all());
-            return response()->json([
-                'status' => 'success',
-                'data' => $pengguna
-            ], status: 201); 
-        }
-        catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
-        }
+        // Enkripsi kata sandi sebelum menyimpan
+        $data = $request->all();
+        $data['kataSandi'] = Hash::make($request->kataSandi);
+
+        // Simpan data pengguna
+        $pengguna = Pengguna::create($data);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $pengguna,
+        ], 201);
+
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pengguna $pengguna)
+    public function login(Request $request)
     {
-        try {
+        // Validasi input
+        $request->validate([
+            'namaPengguna' => 'required|string',
+            'kataSandi' => 'required|string',
+        ]);
+
+        $user = Pengguna::where('namaPengguna', $request->namaPengguna)->first();
+
+        // Autentikasi pengguna
+        if ($user && Hash::check($request->kataSandi, $user->kataSandi)) {
+
+            $token = $user->createToken('Personal Access Token')->plainTextToken;
+
             return response()->json([
-                'status' => 'success',
-                'data' => $pengguna
-            ], status: 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
+                'data' => $user,
+                'token' => $token
+                ], 200);
         }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pengguna $pengguna)
-    {
-        try{
-            $pengguna->update($request->all());
-            return response()->json([
-                'status' => 'success',
-                'data' => $pengguna
-            ], status: 200);
-        }
-        catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
-        }
-    }
+    public function me(Request $request)
+{
+    try {
+        $user = $request->user();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pengguna $pengguna)
-    {
-        try {
-            $pengguna->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data berhasil dihapus'
-            ], status: 200);
-        } catch (\Exception $e) {
+        if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
-            ], status: 400);
+                'message' => 'Token tidak cocok dengan pengguna mana pun.',
+                'debug' => [
+                    'token' => $request->header('Authorization'),
+                ],
+            ], 404);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $user,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], 500);
     }
 }
+
+
+}
+

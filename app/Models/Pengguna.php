@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class Pengguna extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
     protected $table = 'penggunas';
     protected $primaryKey = 'id';
 
@@ -21,4 +23,5 @@ class Pengguna extends Model
         'kataSandi',
         'nomorTelepon',
     ];
+
 }
