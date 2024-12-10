@@ -25,3 +25,5 @@ Route::resource('riwayat-pemesanan', RiwayatPemesananController::class);
 
 Route::post('pengguna/login', [PenggunaController::class, 'login']);
 Route::middleware('auth:sanctum')->get('/me', [PenggunaController::class, 'me']);
+Route::middleware('auth:sanctum')->put('/update', [PenggunaController::class, 'update']);
+Route::middleware('auth:sanctum')->post('/logout', [PenggunaController::class, 'logout']);
