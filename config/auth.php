@@ -39,7 +39,10 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'penggunas',
-        ],
+        ],'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'penggunas',
+        ]
     ],
 
     /*

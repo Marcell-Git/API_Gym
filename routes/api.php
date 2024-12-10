@@ -24,3 +24,4 @@ Route::resource('personal-trainer', PersonalTrainerController::class);
 Route::resource('riwayat-pemesanan', RiwayatPemesananController::class);
 
 Route::post('pengguna/login', [PenggunaController::class, 'login']);
+Route::middleware('auth:sanctum')->get('/me', [PenggunaController::class, 'me']);
